@@ -214,14 +214,17 @@ static NSString* developerPayload = NULL;
             receiptString = @"";
         }
     }
-
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY-MM-dd'T'HH:mm:ssZZZ"];
+    NSDate *originalTransactionDate = transaction.originalTransaction ? transaction.originalTransaction.transactionDate : transaction.transactionDate;
+    
     [StoreEventHandling postMarketPurchase:pvi withExtraInfo:@{
-                                                               @"receiptUrl": receiptUrl,
+                                                               @"receiptUrl": receiptUrl.absoluteString,
                                                                @"transactionIdentifier": transaction.transactionIdentifier,
                                                                @"receiptBase64": receiptString,
-                                                               @"transactionDate": transaction.transactionDate,
-                                                               @"originalTransactionDate": transaction.originalTransaction ? transaction.originalTransaction.transactionDate : transaction.transactionDate,
-                                                               @"originalTransactionIdentifier": transaction.originalTransaction ? transaction.originalTransaction.transactionIdentifier : transaction.transactionIdentifier
+                                                               @"transactionDate": [dateFormatter stringFromDate:transaction.transactionDate],
+                                                               @"originalTransactionDate": [dateFormatter stringFromDate:originalTransactionDate],                                                               @"originalTransactionIdentifier": transaction.originalTransaction ? transaction.originalTransaction.transactionIdentifier : transaction.transactionIdentifier
                                                                }
                                 andPayload:developerPayload];
     [pvi giveAmount:1];
