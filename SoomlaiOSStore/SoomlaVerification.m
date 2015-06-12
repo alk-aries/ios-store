@@ -83,6 +83,11 @@ static NSString* TAG = @"SOOMLA SoomlaVerification";
         [request setHTTPMethod:@"POST"];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        if (VERIFY_HEADERS != NULL) {
+            for (NSString *key in VERIFY_HEADERS) {
+                [request setValue:[VERIFY_HEADERS objectForKey:key] forHTTPHeaderField:key];
+            }
+        }
         [request setHTTPBody:postData];
         
         NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
