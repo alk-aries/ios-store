@@ -36,3 +36,5 @@ extern const int METADATA_VERSION;
 extern BOOL VERIFY_PURCHASES;
 
 extern NSString* VERIFY_URL;
+
+extern NSDictionary* VERIFY_HEADERS;
