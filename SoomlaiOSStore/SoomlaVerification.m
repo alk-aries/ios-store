@@ -185,8 +185,6 @@ static NSString* TAG = @"SOOMLA SoomlaVerification";
     }
 }
 
-}
-
 #pragma mark SKRequestDelegate methods
 
 - (void)requestDidFinish:(SKRequest *)request {
