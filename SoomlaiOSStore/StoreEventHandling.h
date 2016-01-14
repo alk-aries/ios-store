@@ -36,6 +36,7 @@
 #define EVENT_ITEM_PURCHASED                @"ItemPurchased"
 #define EVENT_ITEM_PURCHASE_STARTED         @"ItemPurchaseProcessStarted"
 #define EVENT_MARKET_PURCHASE_CANCELLED     @"MarketPurchaseCancelled"
+#define EVENT_MARKET_PURCHASE_DEFERRED      @"MarketPurchaseDeferred"
 #define EVENT_MARKET_PURCHASED              @"MarketPurchased"
 #define EVENT_MARKET_PURCHASE_VERIF         @"MarketPurchaseVerification"
 #define EVENT_MARKET_PURCHASE_STARTED       @"MarketPurchaseProcessStarted"
@@ -45,7 +46,8 @@
 #define EVENT_MARKET_ITEMS_REFRESH_STARTED  @"MarketItemsRefreshStarted"
 #define EVENT_MARKET_ITEMS_REFRESH_FINISHED @"MarketItemsRefreshFinished"
 #define EVENT_MARKET_ITEMS_REFRESH_FAILED   @"MarketItemsRefreshFailed"
-#define EVENT_UNEXPECTED_ERROR_IN_STORE     @"UnexpectedErrorInStore"
+#define EVENT_UNEXPECTED_STORE_ERROR        @"UnexpectedStoreError"
+#define EVENT_VERIFICATION_STARTED          @"VerificationStarted"
 
 
 // UserInfo Elements
@@ -57,13 +59,14 @@
 #define DICT_ELEMENT_UpgradeVG         @"UpgradeVG"
 #define DICT_ELEMENT_PURCHASABLE       @"PurchasableVirtualItem"
 #define DICT_ELEMENT_PURCHASABLE_ID    @"PurchasableVirtualItemId"
+#define DICT_ELEMENT_FRAUD_PROTECTION  @"fraudProtection"
 #define DICT_ELEMENT_DEVELOPERPAYLOAD  @"DeveloperPayload"
 #define DICT_ELEMENT_EXTRA_INFO        @"extraInfo"
 #define DICT_ELEMENT_SUCCESS           @"success"
 #define DICT_ELEMENT_VERIFIED          @"verified"
 #define DICT_ELEMENT_TRANSACTION       @"transaction"
-#define DICT_ELEMENT_ERROR_CODE        @"error_code"
-#define DICT_ELEMENT_ERROR_MESSAGE     @"error_msg"
+#define DICT_ELEMENT_ERROR_CODE        @"errorCode"
+#define DICT_ELEMENT_ERROR_MESSAGE     @"errorMessage"
 #define DICT_ELEMENT_PRODUCTID         @"productId"
 #define DICT_ELEMENT_PRICE             @"price"
 #define DICT_ELEMENT_TITLE             @"title"
@@ -109,6 +112,8 @@
 
 + (void)postMarketPurchaseCancelled:(PurchasableVirtualItem*)purchasableVirtualItem;
 
++ (void)postMarketPurchaseDeferred:(PurchasableVirtualItem*)purchasableVirtualItem andPayload:(NSString*)payload;
+
 + (void)postMarketPurchase:(PurchasableVirtualItem*)purchasableVirtualItem withExtraInfo:(NSDictionary*)extraInfo andPayload:(NSString*)payload;
 
 + (void)postMarketPurchaseVerification:(BOOL)verified forItem:(PurchasableVirtualItem*)purchasableVirtualItem andTransaction:(SKPaymentTransaction*)transaction forObject:(id)object;
@@ -126,6 +131,8 @@
 + (void)postRestoreTransactionsStarted;
 
 + (void)postUnexpectedError:(int)code forObject:(id)object;
+
++ (void)postVerificationStarted:(PurchasableVirtualItem*)purchasableVirtualItem;
 
 + (void)postSoomlaStoreInitialized;
 

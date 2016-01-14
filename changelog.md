@@ -1,3 +1,64 @@
+### v3.6.19 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.18...v3.6.19)
+
+* Changes
+  * Removed binaries from repo
+
+### v3.6.18 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.17...v3.6.18)
+
+* Changes
+  * Added validation - not allowing null pointers in IStoreAssets
+
+### v3.6.17 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.16...v3.6.17)
+
+* New Features
+  * Add Verification Started Event to signal when the verification has begun
+
+### v3.6.16 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.15...v3.6.16)
+
+* Features
+  * Added Market Purchase Deferred handling
+
+### v3.6.15 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.14...v3.6.15)
+
+* Fixes
+  * StoreInventory.RemoveGoodUpgrades crash when upgrade id is null
+
+### v3.6.14 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.13...v3.6.14)
+
+* Changes
+  * Removed binaries and improved build scripts
+
+* Fixes
+  * Wrong behaviour if purchasable items have the same product ID
+
+### v3.6.13 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.12...v3.6.13)
+
+* Changes
+  * Added Fraud Protection flag to OnMarketPurchaseStarted event
+
+### v3.6.12 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.11...v3.6.12)
+
+* Changes
+  * Added version in code
+
+### v3.6.11 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.10...v3.6.11)
+
+* Fixes
+  * Fixed crash when using LocaliAPStore and getting verification confirmation from server
+
+* Changes
+  * Added refresh of receipt in case it doesn't exist, and finalize transaction if still doesn't exist after refresh
+
+### v3.6.10 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.9...v3.6.10)
+
+* Changes
+  * Added method to retry unfinished transactions after billing service is loaded.
+  * Allowing to force verification on purchases that failed verification b/c of itunes servers didn't work properly.
+  * For MarketPurchaseEvent we bundle the specific provider extra params inside a Hash
+
+* Fixes
+  * Saving SoomlaVerification objects' pointers until they are not needed anymore.
+
 ### v3.6.9 [view commit logs](https://github.com/soomla/ios-store/compare/v3.6.8...v3.6.9)
 
 * Changes
