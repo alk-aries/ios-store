@@ -91,6 +91,14 @@ static NSString* TAG = @"SOOMLA SoomlaStore";
     }
 }
 
+- (void)retryUnfinishedTransactions {
+    if ([SKPaymentQueue canMakePayments]) {
+        NSArray* transactions = [[SKPaymentQueue defaultQueue] transactions];
+        LogDebug(TAG, ([NSString stringWithFormat:@"Retrying any unfinished transactions: %lu", (unsigned long)transactions.count]));
+        [self paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:transactions];
+    }
+}
+
 static NSString* developerPayload = NULL;
 - (BOOL)buyInMarketWithMarketItem:(MarketItem*)marketItem andPayload:(NSString*)payload{
 
@@ -399,6 +407,7 @@ static NSString* developerPayload = NULL;
         [[StoreInfo getInstance] saveWithVirtualItems:virtualItems];
     }
 
+    [self retryUnfinishedTransactions];
     [StoreEventHandling postMarketItemsRefreshFinished:marketItems];
 }
 
