@@ -19,6 +19,8 @@
 #import "MarketItem.h"
 #import "VirtualGood.h"
 
+extern BOOL VERIFY_PURCHASES;
+
 @implementation StoreEventHandling
 
 + (void)observeAllEventsWithObserver:(id)observer withSelector:(SEL)selector{
@@ -32,16 +34,18 @@
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_ITEM_PURCHASED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_ITEM_PURCHASE_STARTED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_PURCHASE_CANCELLED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_PURCHASE_DEFERRED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_PURCHASED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_PURCHASE_VERIF object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_PURCHASE_STARTED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_RESTORE_TRANSACTIONS_FINISHED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_RESTORE_TRANSACTIONS_STARTED object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_UNEXPECTED_ERROR_IN_STORE object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_UNEXPECTED_STORE_ERROR object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_SOOMLASTORE_INIT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_ITEMS_REFRESH_STARTED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_ITEMS_REFRESH_FINISHED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_MARKET_ITEMS_REFRESH_FAILED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:observer selector:selector name:EVENT_VERIFICATION_STARTED object:nil];
 }
 
 + (void)postBillingSupported{
@@ -80,12 +84,12 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_GOOD_UNEQUIPPED object:self userInfo:userInfo];
 }
 
-+ (void)postGoodUpgrade:(NSString*)goodItemId withGoodUpgrade:(NSString*)goodUpgradeItemId{
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              goodItemId, DICT_ELEMENT_GOOD,
-                              goodUpgradeItemId, DICT_ELEMENT_UpgradeVG,
-                              nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_GOOD_UPGRADE object:self userInfo:userInfo];
++ (void)postGoodUpgrade:(NSString*)goodItemId withGoodUpgrade:(NSString*)goodUpgradeItemId {
+    NSMutableDictionary *mutableUserInfo = [NSMutableDictionary dictionaryWithDictionary: @{DICT_ELEMENT_GOOD: goodItemId}];
+    if (goodUpgradeItemId) {
+        mutableUserInfo[DICT_ELEMENT_UpgradeVG] = goodUpgradeItemId;
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_GOOD_UPGRADE object:self userInfo:mutableUserInfo.copy];
 }
 
 + (void)postItemPurchaseStarted:(NSString*)itemId{
@@ -104,6 +108,14 @@
 + (void)postMarketPurchaseCancelled:(PurchasableVirtualItem*)purchasableVirtualItem {
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:purchasableVirtualItem forKey:DICT_ELEMENT_PURCHASABLE];
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_MARKET_PURCHASE_CANCELLED object:self userInfo:userInfo];
+}
+
++ (void)postMarketPurchaseDeferred:(PurchasableVirtualItem*)purchasableVirtualItem andPayload:(NSString*)payload {
+    if (!payload) {
+        payload = @"";
+    }
+    NSDictionary *userInfo = @{DICT_ELEMENT_PURCHASABLE: purchasableVirtualItem, DICT_ELEMENT_DEVELOPERPAYLOAD: payload};
+    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_MARKET_PURCHASE_DEFERRED object:self userInfo:userInfo];
 }
 
 + (void)postMarketPurchase:(PurchasableVirtualItem*)purchasableVirtualItem withExtraInfo:(NSDictionary*)extraInfo andPayload:(NSString*)payload {
@@ -128,7 +140,10 @@
 }
 
 + (void)postMarketPurchaseStarted:(PurchasableVirtualItem*)purchasableVirtualItem{
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:purchasableVirtualItem forKey:DICT_ELEMENT_PURCHASABLE];
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              purchasableVirtualItem, DICT_ELEMENT_PURCHASABLE,
+                              [NSNumber numberWithBool:VERIFY_PURCHASES], DICT_ELEMENT_FRAUD_PROTECTION,
+                              nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_MARKET_PURCHASE_STARTED object:self userInfo:userInfo];
 }
 
@@ -158,10 +173,15 @@
 }
 
 + (void)postUnexpectedError:(int)code forObject:(id)object{
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [NSNumber numberWithInt:code], DICT_ELEMENT_ERROR_CODE,
-                              nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_UNEXPECTED_ERROR_IN_STORE object:object userInfo:userInfo];
+    NSDictionary *userInfo = @{
+            DICT_ELEMENT_ERROR_CODE : @(code)
+    };
+    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_UNEXPECTED_STORE_ERROR object:object userInfo:userInfo];
+}
+
++ (void)postVerificationStarted:(PurchasableVirtualItem*)purchasableVirtualItem {
+    NSDictionary *userInfo = @{ DICT_ELEMENT_PURCHASABLE: purchasableVirtualItem };
+    [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_VERIFICATION_STARTED object:self userInfo:userInfo];
 }
 
 + (void) postSoomlaStoreInitialized {
