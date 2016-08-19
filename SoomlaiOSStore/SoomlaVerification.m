@@ -16,7 +16,9 @@
 
 #import "SoomlaVerification.h"
 #import "SoomlaUtils.h"
+#import "MarketItem.h"
 #import "PurchasableVirtualItem.h"
+#import "PurchaseWithMarket.h"
 #import "StoreEventHandling.h"
 #import "StoreConfig.h"
 
@@ -57,11 +59,13 @@ static NSString* TAG = @"SOOMLA SoomlaVerification";
     }
     
     if (data) {
-        
+        PurchaseWithMarket* marketPurchase = (PurchaseWithMarket *)purchasable.purchaseType;
+        MarketItem* marketItem = marketPurchase.marketItem;
         NSMutableDictionary* postDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                  [data base64Encoding], @"receipt_base64",
-                                  transaction.payment.productIdentifier, @"productId",
-                                  nil];
+                                         [data base64Encoding], @"receipt_base64",
+                                         transaction.payment.productIdentifier, @"productId",
+                                         [marketItem toDictionary], @"product_data",
+                                         nil];
 
         NSString* extraDataS = [[NSUserDefaults standardUserDefaults] stringForKey:@"EXTRA_SEND_RECEIPT"];
         if (extraDataS && [extraDataS length]>0) {
